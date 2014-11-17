@@ -1,0 +1,81 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package thean;
+
+import java.awt.Cursor;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+
+/**
+ *
+ * @author Administrator
+ */
+public class Thread1 extends Thread {
+
+    private JTextField url;
+    private JEditorPane display;
+    private JTextPane showStatus;
+    private String threadName;
+
+    public Thread1(JTextField url, JEditorPane display, JTextPane showStatus, String threadName) {
+        this.url = url;
+        this.display = display;
+        this.showStatus = showStatus;
+        this.threadName = threadName;
+    }
+
+    public Thread1() {
+
+    }
+
+    @Override
+    public void run() {
+
+        String status1 = null;
+        status1 = "Thread " + threadName + "Start\n";
+        try {
+            //  setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            display.setPage(url.getText());
+            showStatus.setText(status1);
+
+            //
+            URL url1 = new URL(url.getText());
+            URLConnection conn = url1.openConnection();
+            Map<String, List<String>> map = conn.getHeaderFields();
+
+            status1 += "Printing Response Header...\n";
+
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                status1 += entry.getKey() + ":" + entry.getValue() + "\n";
+            }
+
+            status1 += "\nGet Response Header By Key ...\n";
+            String server = conn.getHeaderField("Server");
+
+            if (server == null) {
+                status1 += "Key 'Server' is not found!";
+            } else {
+                status1 += "Server - " + server;
+            }
+            status1 += "\n Done\n";
+
+            showStatus.setText(status1);
+
+            //
+        } catch (IOException ex) {
+            Logger.getLogger(Thread1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        status1 += "Thread " + threadName + "Stop\n";
+        showStatus.setText(status1);
+    }
+
+}
